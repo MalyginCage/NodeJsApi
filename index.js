@@ -8,7 +8,7 @@ const mongoose = require('mongoose')
 
 
 const config = require('./config/app')
-mongoose.connect(config.mongoUrl)
+mongoose.connect(config.mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true}).then((res)=>console.log('Connected to MongoDB')).catch((err)=>console.log(`DB connection error: ${err}`))
 
 
 

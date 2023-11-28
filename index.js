@@ -26,6 +26,7 @@ const Product = mongoose.model('Product',{
 })
 
 app.get('/products', (req, res) => Product.find().exec().then(products => res.json(products)))
+app.get('/products/:_id', (req, res) => Product.findById({_id: req.params._id}, req.body).exec().then(products => res.json(products)))
 
 
 app.post('/products', (req,res)=> Product.create(req.body).then(createdProduct => res.json(createdProduct)))

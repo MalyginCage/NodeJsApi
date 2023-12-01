@@ -9,21 +9,6 @@ const mongoose = require('mongoose')
 const config = require('./config/app')
 mongoose.connect(config.mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true}).then((res)=>console.log('Connected to MongoDB')).catch((err)=>console.log(`DB connection error: ${err}`))
 
-const signIn = (req,res)=>{
-    const {login, password}=req.body
-    User.findOne({login}).exec().then((user)=>{
-        if(!user){
-            res.status(401).json({message:'Логина нет'})
-        }
-        else{User.findOne({password}).exec().then((password)=>{if(!password){res.status(401).json({message:'Пароль неверный'})}}).catch(err => {
-            console.log(err)
-            res.status(500).json({error:err})
-        })}
-    }).catch(err => {
-        console.log(err)
-        res.status(500).json({error:err})
-    })
-}
 
 
 
@@ -35,9 +20,9 @@ require('./config/express')(app)
 
 const Product = mongoose.model('Product',{
     id: mongoose.Schema.Types.ObjectId,
-    name: String,
+    name: {type:String, required:true},
     Price: mongoose.Schema.Types.Decimal128,
-    description: String,
+    description: {type:String, required:true},
 })
 
 app.get('/products', (req, res) => Product.find().exec().then(products => res.json(products)))
@@ -60,8 +45,8 @@ app.delete('/products/:id', (req,res)=> Product.deleteOne({id: req.params.id}).e
 
 const User = mongoose.model('User',{
     id: mongoose.Schema.Types.ObjectId,
-    login: String,
-    password: String,
+    login: {type:String, required:true},
+    password: {type:String, required:true},
     role:{type: String, default: 'User'}
 })
 app.get('/users/', (req, res) => User.find().exec().then(user => res.json(user)))
@@ -70,7 +55,7 @@ app.get('/users/:_id', (req, res) => User.findById({_id: req.params._id}, req.bo
 
 
 app.post('/users', (req,res)=> User.create(req.body).then(createdUser => res.json(createdUser)))
-app.post('/signin',signIn)
+
 app.post('/signin', (req,res) => {
     User.find({login: req.body.login}).select("_id login password role").exec().then(user => {
         if(user.length < 1){

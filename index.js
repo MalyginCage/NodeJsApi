@@ -23,6 +23,7 @@ const Product = mongoose.model('Product',{
     id: mongoose.Schema.Types.ObjectId,
     name: String,
     Price: mongoose.Schema.Types.Decimal128,
+    description: String,
 })
 
 app.get('/products', (req, res) => Product.find().exec().then(products => res.json(products)))
@@ -31,7 +32,7 @@ app.get('/products/:_id', (req, res) => Product.findById({_id: req.params._id}, 
 
 app.post('/products', (req,res)=> Product.create(req.body).then(createdProduct => res.json(createdProduct)))
 
-app.put('/products/:id', (req,res)=> Product.findOneAndUpdate({id: req.params.id}, req.body).exec().then(product => res.json(product)))
+app.put('/products/:_id', (req,res)=> Product.findOneAndUpdate({_id: req.params._id}, req.body).exec().then(product => res.json(product)))
 
 app.delete('/products/:id', (req,res)=> Product.deleteOne({id: req.params.id}).exec().then(()=> res.json({success: true})))
 

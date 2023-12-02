@@ -54,7 +54,18 @@ app.get('/users/:_id', (req, res) => User.findById({_id: req.params._id}, req.bo
 
 
 
-app.post('/users', (req,res)=> User.create(req.body).then(createdUser => res.json(createdUser)))
+app.post('/users', (req,res)=> User.create(req.body)
+.then(createdUser =>{
+    if(createdUser)
+    {
+        res.status(201).json({
+            message: "user created",
+            createdUser
+        })
+    }
+
+}))
+     
 
 app.post('/signin', (req,res) => {
     User.find({login: req.body.login}).select("_id login password role").exec().then(user => {

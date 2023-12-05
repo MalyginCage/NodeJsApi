@@ -21,12 +21,19 @@ require('./config/express')(app)
 const Product = mongoose.model('Product',{
     id: mongoose.Schema.Types.ObjectId,
     name: {type:String, required:true},
-    Price: mongoose.Schema.Types.Decimal128,
+    Price: {type:String, required:true},
     description: {type:String, required:true},
 })
 
 app.get('/products', (req, res) => Product.find().exec().then(products => res.json(products)))
-app.get('/products/:_id', (req, res) => Product.findById({_id: req.params._id}, req.body).exec().then(products => res.json(products)))
+app.get('/products/:_id', (req, res) => Product.findById({_id: req.params._id}, req.body).exec().then(products => res.json(
+    {
+        id:products.id,
+        name:products.name,
+        Price:products.Price,
+        description:products.description
+    }
+)))
 
 
 app.post('/products', (req,res)=> Product.create(req.body).then(createdProduct => res.json(createdProduct)))

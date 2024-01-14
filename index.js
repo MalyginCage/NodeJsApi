@@ -38,9 +38,47 @@ app.get('/products/:_id', (req, res) => Product.findById({_id: req.params._id}, 
 
 app.post('/products', (req,res)=> Product.create(req.body).then(createdProduct => res.json(createdProduct)))
 
-app.put('/products/:_id', (req,res)=> Product.findOneAndUpdate({_id: req.params._id}, req.body).exec().then(product => res.json(product)))
+app.put('/products/update/:_id', (req,res) => {
+    const id = req.params._id
+    Product.findByIdAndUpdate(id, {$set: req.body} , {new: true})
+    .exec()
+    .then(result => {
+        res.status(200).json({
+            _id:result._id,
+            name:result.name,
+            description:result.description,
+            Price:result.Price
+        })
+    })
+    .catch(err => {
+        console.log(err)
+        res.status(500).json({
+            error:err
+        })
+    })
+})
 
-app.delete('/products/:id', (req,res)=> Product.deleteOne({id: req.params.id}).exec().then(()=> res.json({success: true})))
+app.delete('/products/:_id', (req,res) => {
+ const id = req.params._id
+ Product.findOneAndDelete(id)
+ .exec()
+ .then(result => {
+    res.status(200).json({
+        message: "deleted"
+    })
+})
+ .catch(err => {
+    console.log(err)
+    res.status(500).json({
+        error:err
+    })
+})
+
+
+})
+ 
+
+
 
 
 
@@ -57,7 +95,7 @@ const User = mongoose.model('User',{
     role:{type: String, default: 'User'}
 })
 app.get('/users/', (req, res) => User.find().exec().then(user => res.json(user)))
-app.get('/users/:_id', (req, res) => User.findById({_id: req.params._id}, req.body).exec().then(user => res.json(user)))
+app.get('/users/:_id', (req, res) => User.findById({_id: req.params._id}).exec().then(user => res.json({user})))
 
 
 
@@ -90,6 +128,7 @@ app.post('/signin', (req,res) => {
             return res.status(200).json({
                             message: "Auth successful",
                             _id: user[0]._id,
+                            role: user[0].role
                         })
         }
  
